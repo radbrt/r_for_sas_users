@@ -1,0 +1,56 @@
+---
+title: "Tutorial"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+
+## Intro
+
+SAS and R are made for the same purpose: Statistical data analysis. But they go about it in quite different ways. If you are used to SAS, a short data analysis might be something like this:
+
+1. You import one or more CSV files, using a `PROC IMPORT` statement or perhaps directly using a `DATA` step. You save the resulting datasets in your `WORK` area, or perhaps you have specified some other location using a libname statement.
+2. You calculate som new columns, filter, join and possibly restructure the datasets using a series of `DATA`- and `PROC` steps.
+3. After the data has been transformed the way you want it, you do the analysis with steps like `PROC MEANS`, `PROC TABULATE`, `PROC REG` and `PROC SGPLOT`. You copy the output you want into excel or powerpoint.
+4. Once you have the analysis you want, you spend some time creating macro variables and possibly macro functions in order to tidy up the analysis.
+5. You save the final files you did the analysis on as SAS datasets.
+
+We will go through a similar analysis in R, and we will see some similarities and differences from SAS.
+
+Upfront, I want to mention a few of the most significant differences. This might seem confusing when explained in the abstract, but don't worry: It will become clear.
+
+1. R doesn't have a "work" area as such, all the data it works with is saved in memory - not on disk.
+2. SAS does everything in separate steps, either `DATA` or `PROC`. Between these steps, there is nothing (other than maybe some macro statements). R doesn't have distinct steps like this.
+3. `DATA` and `PROC` steps are very different types of steps, respectively for data manipulation and data aggregation (broadly defined). In R, calculations and analysis can merge into each other to a much bigger extent.
+4. In SAS, everything is a dataset. Except for macro variables, which basically are strings (although they can be interpreted as numbers). And macros are pretty much it's own separate language that simply generates SAS code. R has datasets, strings, lists, vectors, booleans, whole numbers, decimal numbers, and more. This might be confusing at first, but you'll get the hang of it - and the extra types of "objects" (that's the generic term) can often simplify your workflow.
+
+## Reading data
+
+There are plenty of functions for reading data in R, we will start with a common CSV file where the first row is column names, and the fields are separated by commas. We will read these types of files with the `read_csv` function from the `readr` package. Instead of a **step** like the `PROC IMPORT`, we use a simple function which takes a single argument (input): The file to read. The output of the function is a dataset, which we store in the `muni` variable. The crude left-arrow `<-` is the same as an equal sign, we assign the output of the `read_csv` function to the ´muni´ variable similarly to how you would assign a macro variable in SAS.
+
+
+```{r read_data-setup}
+download.file('https://raw.githubusercontent.com/radbrt/working_from_home/master/data/muni_density.csv', 
+'muni_density.csv')
+
+```
+
+```{r read_data, exercise=TRUE}
+
+muni <- read_csv('muni_density.csv')
+
+head(muni)
+
+
+```
+
+Notice that the `read_csv` function prints a little information about how the columns were interpreted, we can see that the first column is interpreted as text and the remaining are interpreted as doubles - meaning numbers (we'll get back to this).
+
+We use the `head` function to show the first few lines of the file, just to get a feel for it.
